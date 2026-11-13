@@ -1,0 +1,181 @@
+---
+import Layout from "../layouts/Layout.astro";
+import "../styles/global.css";
+
+export const prerender = true;
+
+const gallery = [
+  {
+    src: "/images/loft-living.jpg",
+    alt: "Upstairs TV room with sofa, ottoman, and daylight through blinds",
+  },
+  {
+    src: "/images/loft-kitchen.jpg",
+    alt: "Kitchen with range, sink, and window looking onto the deck",
+  },
+  {
+    src: "/images/loft-bedroom.jpg",
+    alt: "Queen bedroom under the loft eaves with striped bedding",
+  },
+  {
+    src: "/images/loft-detail.jpg",
+    alt: "Bedroom looking through to the upstairs lounge",
+  },
+  {
+    src: "/images/loft-dining.jpg",
+    alt: "Dining area with Ballard sign and view into the kitchen",
+  },
+  {
+    src: "/images/loft-exterior.jpg",
+    alt: "Private exterior entrance along the brick path",
+  },
+];
+---
+
+<Layout>
+  <header class="hero">
+    <div class="hero__media" aria-hidden="true">
+      <img
+        src="/images/loft-hero.jpg"
+        alt=""
+        width="1920"
+        height="1387"
+        fetchpriority="high"
+      />
+      <div class="hero__shade"></div>
+    </div>
+    <div class="hero__content">
+      <p class="brand">The Loft</p>
+      <h1>A two-level Ballard stay, close to the parks.</h1>
+      <p class="hero__lede">
+        Kitchen downstairs, quiet rooms up top — book around live calendars, then pay
+        simply with Venmo.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn--primary" href="#book">Check dates</a>
+        <a class="btn btn--ghost" href="#gallery">See the space</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="gallery" id="gallery" aria-label="Photo gallery">
+    <div class="gallery__track">
+      {
+        gallery.map((shot) => (
+          <figure>
+            <img src={shot.src} alt={shot.alt} width="1600" height="1200" loading="lazy" />
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section" id="stay">
+    <p class="section__eyebrow">The stay</p>
+    <h2 class="section__title">Kitchen below, bedroom &amp; TV room above.</h2>
+    <p class="section__copy">
+      Standalone unit in a Ballard triplex — private entrance, outdoor space, and a short
+      walk to shops, parks, and the bus. Photos are from the live
+      <a href="https://www.airbnb.com/rooms/1703090109214600082" target="_blank" rel="noopener noreferrer">Airbnb listing</a>;
+      swap files in <code>public/images/</code> anytime.
+    </p>
+    <ul class="amenities">
+      <li>2 guests · 1 bedroom</li>
+      <li>Queen bed</li>
+      <li>Full kitchen</li>
+      <li>Wi‑Fi &amp; TV</li>
+      <li>Private entrance</li>
+      <li>Early check-in / late check-out</li>
+    </ul>
+  </section>
+
+  <section class="section book" id="book" data-booking>
+    <p class="section__eyebrow">Book</p>
+    <h2 class="section__title">Pick nights. Pay on Venmo. We’ll confirm.</h2>
+    <p class="section__copy">
+      Venmo isn’t an embedded checkout — you’ll pay in the Venmo app (or site), then
+      tap below so we know to hold the dates.
+    </p>
+
+    <div class="book__panel">
+      <div>
+        <div class="calendar-status" data-calendar-status data-state="ok">
+          Loading calendars…
+        </div>
+
+        <div class="field-row">
+          <label>
+            Check-in
+            <input type="date" name="checkin" required />
+          </label>
+          <label>
+            Check-out
+            <input type="date" name="checkout" required />
+          </label>
+        </div>
+
+        <p class="hint" data-conflict hidden>
+          Those dates overlap a stay already blocked on Airbnb or VRBO. Choose another range.
+        </p>
+
+        <div class="summary">
+          <dl>
+            <div>
+              <dt>Nights</dt>
+              <dd data-nights>—</dd>
+            </div>
+            <div>
+              <dt>Nightly rate</dt>
+              <dd data-rate>$185</dd>
+            </div>
+            <div class="total">
+              <dt>Total due on Venmo</dt>
+              <dd data-total>—</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="pay" data-pay hidden>
+        <ol class="steps">
+          <li>Open Venmo with the button or scan the QR.</li>
+          <li>Send the total with the stay dates in the note.</li>
+          <li>Come back and confirm you’ve paid / want to request the booking.</li>
+        </ol>
+        <a class="btn btn--primary" data-venmo-link href="#" target="_blank" rel="noopener noreferrer">
+          Pay with Venmo
+        </a>
+        <img class="pay__qr" data-venmo-qr hidden alt="" width="220" height="220" />
+        <p class="pay__note">
+          Honest heads-up: this deep-links to Venmo (@mattbowers). We don’t process cards on this site.
+        </p>
+        <button type="button" class="btn btn--ghost confirm" data-confirm disabled style="color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--mist);">
+          I’ve paid / request to book
+        </button>
+        <div class="confirm-done" data-confirm-done>
+          <strong>Request received.</strong>
+          <p data-confirm-summary></p>
+        </div>
+      </div>
+
+      <div data-venmo-missing>
+        <p class="hint">
+          Venmo isn’t configured yet. Set <code>VENMO_USERNAME</code> or
+          <code>VENMO_PAYMENT_LINK</code> in the environment to enable payment.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <span>The Loft · Ballard, Seattle</span>
+    <span>Calendars merge Airbnb + VRBO iCal · payments via Venmo</span>
+  </footer>
+</Layout>
+
+<script>
+  import { initBooking } from "../scripts/booking";
+
+  const root = document.querySelector<HTMLElement>("[data-booking]");
+  if (root) initBooking(root);
+</script>

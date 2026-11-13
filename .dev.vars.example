@@ -1,0 +1,9 @@
+# Copied to `.dev.vars` for `wrangler dev` / Astro Cloudflare platformProxy.
+# Same keys as `.env.example`.
+
+AIRBNB_ICAL_URL=https://www.airbnb.com/calendar/ical/1703090109214600082.ics?t=c709945b79284ed593daea02e0eb1b16
+VRBO_ICAL_URL=https://www.vrbo.com/icalendar/27acb58d007d4c65a55fa08b70748946.ics?nonTentative
+VENMO_USERNAME=mattbowers
+VENMO_PAYMENT_LINK=https://venmo.com/mattbowers
+NIGHTLY_RATE=185
+HOST_EMAIL=
