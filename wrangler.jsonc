@@ -4,6 +4,7 @@
   "compatibility_date": "2026-11-13",
   "compatibility_flags": ["nodejs_compat"],
   "upload_source_maps": true,
+  "workers_dev": true,
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist"
@@ -11,6 +12,12 @@
   "observability": {
     "enabled": true
   },
+  // Custom domain purchased in Cloudflare for this site.
+  // Attach on deploy (zone must be on the same Cloudflare account).
+  "routes": [
+    { "pattern": "ballard.place", "custom_domain": true },
+    { "pattern": "www.ballard.place", "custom_domain": true }
+  ],
   // Create the KV namespace once, then paste the IDs:
   //   npx wrangler kv namespace create the-loft-bookings
   //   npx wrangler kv namespace create the-loft-bookings --preview
@@ -25,6 +32,7 @@
   // Non-secret defaults for deploy. Prefer `wrangler secret` / dashboard secrets
   // if you rotate calendar tokens.
   "vars": {
+    "SITE_URL": "https://ballard.place",
     "NIGHTLY_RATE": "185",
     "VENMO_USERNAME": "mattbowers",
     "VENMO_PAYMENT_LINK": "https://venmo.com/mattbowers",

@@ -7,6 +7,7 @@ type BookingsKv = {
 };
 
 type RuntimeEnv = {
+  SITE_URL?: string;
   AIRBNB_ICAL_URL?: string;
   VRBO_ICAL_URL?: string;
   VENMO_USERNAME?: string;

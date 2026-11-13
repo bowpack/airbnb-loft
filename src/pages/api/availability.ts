@@ -27,6 +27,10 @@ export const GET: APIRoute = async ({ locals }) => {
   const airbnbUrl = readEnv(runtime, "AIRBNB_ICAL_URL");
   const vrboUrl = readEnv(runtime, "VRBO_ICAL_URL");
   const nightlyRate = Number(readEnv(runtime, "NIGHTLY_RATE") || "185") || 185;
+  const siteUrl = (readEnv(runtime, "SITE_URL") || "https://ballard.place").replace(
+    /\/$/,
+    "",
+  );
 
   const venmoUsername = readEnv(runtime, "VENMO_USERNAME");
   const venmoPaymentLink = readEnv(runtime, "VENMO_PAYMENT_LINK");
@@ -71,6 +75,8 @@ export const GET: APIRoute = async ({ locals }) => {
       busy,
       siteBookings: siteBookings.length,
       calendarExportPath: "/api/calendar.ics",
+      calendarExportUrl: `${siteUrl}/api/calendar.ics`,
+      siteUrl,
       nightlyRate,
       venmo: {
         username: venmoUsername || null,

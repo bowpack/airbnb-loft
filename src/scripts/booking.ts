@@ -5,6 +5,8 @@ type AvailabilityResponse = {
   connected: { airbnb: boolean; vrbo: boolean };
   busy: BusyRange[];
   nightlyRate: number;
+  calendarExportUrl?: string;
+  siteUrl?: string;
   venmo: {
     username: string | null;
     paymentLink: string | null;
@@ -183,9 +185,11 @@ export function initBooking(root: HTMLElement) {
           : !state.connected.airbnb
             ? " Airbnb feed not connected — only VRBO busy nights are blocked."
             : " Busy nights from Airbnb + VRBO are blocked.";
+        const exportHint =
+          state.calendarExportUrl || "https://ballard.place/api/calendar.ics";
         setStatus(
           "ok",
-          `Synced with ${parts}.${pending} Site bookings also block dates and export to /api/calendar.ics.`,
+          `Synced with ${parts}.${pending} Site bookings also block dates and export to ${exportHint}.`,
         );
       }
     } catch {
