@@ -4,6 +4,7 @@
   "compatibility_date": "2026-11-13",
   "compatibility_flags": ["nodejs_compat"],
   "upload_source_maps": true,
+  "workers_dev": true,
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist"
@@ -11,20 +12,24 @@
   "observability": {
     "enabled": true
   },
-  // Create the KV namespace once, then paste the IDs:
-  //   npx wrangler kv namespace create the-loft-bookings
-  //   npx wrangler kv namespace create the-loft-bookings --preview
-  // Local `wrangler dev` / platformProxy works with these preview placeholders.
+  // Custom domain purchased in Cloudflare for this site.
+  "routes": [
+    { "pattern": "ballard.place", "custom_domain": true },
+    { "pattern": "www.ballard.place", "custom_domain": true }
+  ],
+  // Production namespace: the-loft-bookings.
+  // preview_id matches production until a separate preview namespace exists.
   "kv_namespaces": [
     {
       "binding": "BOOKINGS",
-      "id": "00000000000000000000000000000001",
-      "preview_id": "00000000000000000000000000000002"
+      "id": "44c5f865914847c189511787becebf14",
+      "preview_id": "44c5f865914847c189511787becebf14"
     }
   ],
   // Non-secret defaults for deploy. Prefer `wrangler secret` / dashboard secrets
   // if you rotate calendar tokens.
   "vars": {
+    "SITE_URL": "https://ballard.place",
     "NIGHTLY_RATE": "185",
     "VENMO_USERNAME": "mattbowers",
     "VENMO_PAYMENT_LINK": "https://venmo.com/mattbowers",

@@ -2,6 +2,8 @@
 
 One-page vacation rental site for **The Loft** (Ballard, Seattle): photo-led landing, check-in/out picker, Airbnb + VRBO calendar blocking (iCal), and Venmo payment (deep link + QR — not an embedded card checkout).
 
+**Production domain:** [ballard.place](https://ballard.place) (purchased in Cloudflare; `www.ballard.place` also routed).
+
 Built with **Astro** + **Cloudflare Workers** (static assets + server API) via Wrangler.
 
 Listing reference: [Airbnb — Ballard Loft](https://www.airbnb.com/rooms/1703090109214600082)
@@ -24,6 +26,7 @@ npm run preview               # astro build && wrangler dev
 
 | Variable | Status | Purpose |
 | --- | --- | --- |
+| `SITE_URL` | **Set** → `https://ballard.place` | Canonical public URL (ICS links, etc.) |
 | `AIRBNB_ICAL_URL` | **Set** for this listing | Airbnb calendar export (ICS) |
 | `VRBO_ICAL_URL` | **Set** for this listing | VRBO calendar export (ICS) |
 | `VENMO_USERNAME` | **Set** → `mattbowers` | Venmo handle without `@` |
@@ -61,10 +64,8 @@ If a feed URL is missing, that source is skipped (no crash). If both external fe
 Public ICS feed of bookings confirmed on The Loft site:
 
 ```text
-https://<your-worker-host>/api/calendar.ics
+https://ballard.place/api/calendar.ics
 ```
-
-Example after deploy to Workers: `https://the-loft.<account>.workers.dev/api/calendar.ics`
 
 When a guest taps **I’ve paid / request to book**, the stay is stored in Cloudflare KV (`BOOKINGS`) and appears in that feed so Airbnb/VRBO can mark those nights busy.
 
@@ -72,7 +73,7 @@ When a guest taps **I’ve paid / request to book**, the stay is stored in Cloud
 
 1. Open the [Ballard Loft listing](https://www.airbnb.com/rooms/1703090109214600082) → **Calendar**.
 2. **Availability** / calendar settings → **Sync calendars** / **Import calendar**.
-3. Paste `https://<your-worker-host>/api/calendar.ics`.
+3. Paste `https://ballard.place/api/calendar.ics`.
 4. Name it e.g. “The Loft website” → Save.
 
 Airbnb periodically refreshes imported calendars; new site bookings show as unavailable after the next sync.
@@ -81,7 +82,7 @@ Airbnb periodically refreshes imported calendars; new site bookings show as unav
 
 1. Open the listing calendar in VRBO / partner host tools.
 2. Find **Calendar sync** / **Import calendar** (iCal).
-3. Paste `https://<your-worker-host>/api/calendar.ics`.
+3. Paste `https://ballard.place/api/calendar.ics`.
 4. Save. VRBO will pull busy ranges from the site feed on its refresh cadence.
 
 ### Where to get inbound iCal URLs (Airbnb → site, VRBO → site)
@@ -116,17 +117,13 @@ Hero + gallery images live in `public/images/` (copied from the Airbnb listing m
 
 Uses **Workers + static assets**. From a machine logged into Cloudflare:
 
-### 1. Create the bookings KV namespace
+### 1. Bookings KV namespace
 
-```bash
-npx wrangler login
-npx wrangler kv namespace create the-loft-bookings
-npx wrangler kv namespace create the-loft-bookings --preview
-```
+Production namespace **the-loft-bookings** is already created and wired in `wrangler.jsonc` as the `BOOKINGS` binding (`44c5f865914847c189511787becebf14`). `preview_id` points at the same namespace until a separate preview namespace exists.
 
-Paste the returned IDs into `wrangler.jsonc` → `kv_namespaces` (`id` + `preview_id`) for the `BOOKINGS` binding. Placeholder IDs in-repo are only for local preview.
+### 2. Deploy (attaches `ballard.place`)
 
-### 2. Deploy
+`wrangler.jsonc` routes **ballard.place** and **www.ballard.place** as Worker custom domains.
 
 ```bash
 npm run deploy                # astro build && wrangler deploy
@@ -138,7 +135,9 @@ Or connect the GitHub repo in the Cloudflare dashboard (Workers Builds):
 - **Deploy command:** `npx wrangler deploy`
 - **Root:** repository root
 
-Confirm env vars in the dashboard after first deploy (or rely on `wrangler.jsonc` vars). Then copy the live `/api/calendar.ics` URL into Airbnb + VRBO import settings (see above).
+Confirm env vars in the dashboard after first deploy (or rely on `wrangler.jsonc` vars). Then paste **`https://ballard.place/api/calendar.ics`** into Airbnb + VRBO import settings (see above).
+
+If custom domains don’t attach on first deploy: Worker → **Settings → Domains & Routes** → Add `ballard.place` / `www.ballard.place`.
 
 ## Scripts
 
@@ -161,7 +160,7 @@ Confirm env vars in the dashboard after first deploy (or rely on `wrangler.jsonc
 
 ## Still needed from owners
 
-- Create real Cloudflare **KV** IDs and deploy, then paste `/api/calendar.ics` into Airbnb + VRBO **import**
+- Deploy the Worker (binds **ballard.place**), then paste `https://ballard.place/api/calendar.ics` into Airbnb + VRBO **import**
 - Confirm **nightly rate** if not `$185`
 - Optional **host email** for confirmation copy
 - Optional: move iCal URLs to Cloudflare **secrets** if you rotate export tokens
